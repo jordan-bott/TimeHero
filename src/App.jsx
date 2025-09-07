@@ -49,11 +49,17 @@ function App() {
       clockOutHour = clockOutHour - 12
     }
 
+    console.log(clockOutMin)
     if (clockOutMin === 60) {
       clockOutHour = clockOutHour + 1
       clockOutMin = "00"
-    } else if (clockOutMin === 0) {
-      clockOutMin = "00"
+    } else if (clockOutMin > 60) {
+      clockOutHour += 1
+      clockOutMin -= 60
+    }
+
+    if (clockOutMin < 10) {
+      clockOutMin = `0${clockOutMin}`
     }
 
     setClockOutTime(`${clockOutHour}:${clockOutMin}${timeOfDay}`)
