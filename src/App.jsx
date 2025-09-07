@@ -1,25 +1,12 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
   const [currentHours, setCurrentHours] = useState(0)
   const [currentMins, setCurrentMins] = useState(0)
   const [targetHours, setTargetHours] = useState(40)
   const [clockedInTime, setClockedInTime] = useState("12:00")
   const [clockOutTime, setClockOutTime] = useState("")
-
-  const decimalDict = {
-    .01: 1,
-    .03: 2,
-    .05: 3,
-    .07: 4,
-    .08: 5,
-    .10: 6,
-  }
-
 
   const handleCurrentHourChange = (event) => {
     const value = event.target.value;
@@ -41,21 +28,37 @@ function App() {
     setClockedInTime(value);
   };
 
-  const calculateClockOut = () => {
+  const calculateClockOut = (e) => {
+    e.preventDefault()
     if (currentMins === 0) {
       var hoursTilClockOut = targetHours - currentHours
       var minsTilClockOut = 0
     } else {
       var hoursTilClockOut = targetHours - currentHours - 1
-      var minsTilClockOut = 60 - currentMins
+      var minsFromDec = Math.round(60 * currentMins)
+      var minsTilClockOut = 60 - minsFromDec
     }
-    var clockOutHour = clockedInTime.substring(0,2) + hoursTilClockOut
-    var clockOutMin = clockedInTime.substring(3, 5) + minsTilClockOut
 
-    setClockOutTime(`${clockOutHour}:${clockOutMin}`)
+    var clockOutHour = parseInt(clockedInTime.substring(0,2)) + hoursTilClockOut
+    var clockOutMin = parseInt(clockedInTime.substring(3, 5)) + minsTilClockOut
+    var timeOfDay = "AM"
+
+    if (clockOutHour === 12) {
+      timeOfDay = "PM"
+    } else if (clockOutHour > 12) {
+      timeOfDay = "PM"
+      clockOutHour = clockOutHour - 12
+    }
+
+    if (clockOutMin === 60) {
+      clockOutHour = clockOutHour + 1
+      clockOutMin = "00"
+    } else if (clockOutMin === 0) {
+      clockOutMin = "00"
+    }
+
+    setClockOutTime(`${clockOutHour}:${clockOutMin}${timeOfDay}`)
   }
-
-console.log(clockOutTime)
 
   return (
     <>
@@ -63,9 +66,9 @@ console.log(clockOutTime)
         <label htmlFor="Current Hours">Current Total Hours</label>
         <input onChange={handleCurrentHourChange} value={currentHours} type="number" name="Current Hours"/>
         <label htmlFor="Current Minutes">Current Total Minute Decimal</label>
-        <input onChange={handleCurrentMinChange} value={currentMins} type="number" name="Current Minutes" pattern="\d"/>
+        <input onChange={handleCurrentMinChange} value={currentMins} type="number" name="Current Minutes"/>
         <label htmlFor="Target Hours">Target Hours</label>
-        <input onChange={handleTargetHourChange} value={targetHours} type="number" name="Target Hours"/>
+        <input onChange={handleTargetHourChange} value={targetHours} type="number" name="Target Hours" pattern="\d"/>
         <label htmlFor="Clocked In Time">Clock In Time</label>
         <input onChange={handleClockedInTimeChange} value={clockedInTime} type="time" name="Clocked In Time"/>
         <button type="submit" >Calculate Clock Out Time</button>
