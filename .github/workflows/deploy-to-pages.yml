@@ -39,7 +39,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload static files as artifact
-        id: deployment
+        id: upload
         uses: actions/upload-pages-artifact@v3
         with:
           path: build_outputs_folder/
